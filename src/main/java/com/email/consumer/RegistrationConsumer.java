@@ -14,15 +14,22 @@ public class RegistrationConsumer {
     }
 
     @KafkaListener(topics = "registration-success", groupId = "email-service-group")
-    public void consume(String message) {
+public void consume(String message) {
+    try {
+        System.out.println("Received Kafka message: " + message);
 
         String[] data = message.split(",");
-
         String email = data[0];
-        String name = data[1];
+        String name = data.length > 1 ? data[1] : "User";
 
         emailSenderService.sendRegistrationEmail(email, name);
 
         System.out.println("Registration email sent to: " + email);
+
+    } catch (Exception e) {
+        System.out.println("Email sending failed: " + e.getMessage());
+        e.printStackTrace();
     }
+}
+    
 }
